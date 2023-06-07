@@ -9,4 +9,5 @@ urlpatterns = [
 
     # ex: 127.0.0.1:8000/polls/5/results/
     path("<int:question_id>/results/", views.results, name="results")
-    
+]
+
