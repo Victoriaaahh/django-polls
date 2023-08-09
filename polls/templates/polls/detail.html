@@ -1,17 +1,26 @@
 {% extends "polls/base.html" %}
-{% block title%}Página Inicial{% endblock title%}
+{% block title%}Página de Detalhes{% endblock title%}
 
 {% block content %}
-    <div>
-        <p> <b>Código: </b> {{ question.id }} </p>
-        <p> <b>Título: </b> {{ question.question_text }} </p>
-        <p> <b>Data de Publicação: </b> {{ question.pub_date }} </p>
-    </div>
-
+    
     <h1>{{ question.question_text }} </h1> 
     <ul>
-    {% for choice in question.choice_set.all %}
-        <li>{{choice.choice_text}}</li>
-    {% endfor %}
+        {% for choice in question.choice_set.all %}
+            <li>{{choice.choice_text}}</li>
+        {% endfor %}
     </ul>
+    
+    <a href= "{% url 'index' %}">Página Inicial</a>
+    <form action="{% url 'detail' question.id %}" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend><h1>{{ question.question_text }}</h1></legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% for choice in question.choice_set.all %}
+                <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+            {% endfor %}
+        </fieldset>
+        <input type="submit" value="Vote">
+        </form>
 {% endblock %}
