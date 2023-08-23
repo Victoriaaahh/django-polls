@@ -11,6 +11,9 @@ urlpatterns = [
     path("<int:question_id>/results/", views.results, name="results"),
 
     # ex: 27.0.0.1:8000/polls/5/vote/
-    path("<int:question_id>/vote/", views.vote, name="vote")
+    path("<int:question_id>/vote/", views.vote, name="vote"),
+
+    # página de cadastro de nova enquete
+    path('cadastrar', views.QuestionCreateView.as_view(), name="question-create")
 ]
 

@@ -19,4 +19,10 @@ def results(request, question_id):
 def vote(request, question_id):
     return HttpResponse(f"Você vai votar na pergunta de número {question_id}.")
 
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
 
+class QuestionCreateView(CreateView): 
+    model = Question
+    success_url = reverse_lazy('index')
+    fields = {'question_text', 'pub_date'}
