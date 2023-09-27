@@ -3,6 +3,9 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from .models import Question
+from typing import List
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def index(request):
     latest_question_list = Question.objects.order_by("-pub_date")[:5]
@@ -11,6 +14,9 @@ def index(request):
         }
     return render(request, "polls/index.html", context)
 
+@login_required
+def sobre(request):
+    return HttpResponse('Este é um app de enquete!')
 def detail(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     return render(request, "polls/detail.html", {"question": question})
@@ -27,7 +33,7 @@ from django.urls import reverse_lazy
 class QuestionCreateView(CreateView):
     model = Question 
     fields = ('question_text',)
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('question-list')
     template_name = 'polls/question_form.html'
 
 class QuestionListView(ListView):
@@ -38,15 +44,15 @@ class QuestionDetailView(DetailView):
     model = Question
     context_object_name = 'question'
 
-    from django.contrib import messages
+from django.contrib import messages
 
 class QuestionDeleteView(DeleteView):
     model = Question 
-    success_url = reverse_lazy("question_list")
+    success_url = reverse_lazy("question-list")
     success_message ="Enquete excluída com sucesso"
 
     def form_valid(self, form):
-        message.success(self.request, self.success_message)
+        messages.success(self.request, self.success_message)
         return super().form_valid(form)
 
 class QuestionUpdateView(UpdateView):

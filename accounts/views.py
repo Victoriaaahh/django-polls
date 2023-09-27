@@ -22,3 +22,5 @@ class AccountCreateView(CreateView):
         form.save()
         messages.success(self.request, self.success_message)
         return super(AccountCreateView, self).form_valid(form)
+
+    
