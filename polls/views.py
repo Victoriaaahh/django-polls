@@ -58,4 +58,4 @@ class QuestionDeleteView(DeleteView):
 class QuestionUpdateView(UpdateView):
     model = Question 
     success_url = reverse_lazy('question-list')
-    fields = ('question-text',)
+    fields = ('question_text',)
