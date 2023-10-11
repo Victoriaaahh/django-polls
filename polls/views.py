@@ -85,22 +85,36 @@ class ChoiceCreateView(CreateView):
 
     def dispatch(self, request, *args, **kwards):
         self.question = get_object_or_404(Question, pk=self.kwargs.get('pk'))
-        return super(ChoiceCreateView, self).dispatch(request, *args, **kwargs)
+        return super(ChoiceCreateView, self).dispatch(request, *args, **kwards)
     
     def get_context_data(self, **kwards): 
         question = get_object_or_404(Question, pk=self.kwargs.get('pk'))
 
-        context = super(ChoiceCreateView, self).gett_context_data(**kwargs)
-        context['form_tittle'] = f'Alternativa para: {question.question+text}'
+        context = super(ChoiceCreateView, self).get_context_data(**kwards)
+        context['form_tittle'] = f'Alternativa para: {question.question_text}'
 
         return context
 
-    def def form_valid(self, form):
+    def form_valid(self, form):
         form.instance.question = self.question
-        message_success(self.request, self.success_message)
+        messages.success = (self.request, self.success_message)
         return super(ChoiceCreateView, self).form_valid(form)
 
     def get_success_url(self, *args, **kwargs):
         question_id = self.kwargs.get('pk')
         return reverse_lazy('poll_edit', kwargs={'pk': question_id}) 
      
+class ChoiceDeleteView(LoginRequiredMixin, DeleteView):
+    model: Choice
+    template_name: 'polls/choice_confirm_delete.html'
+    fields = ('choice_text', )
+    success_message = 'Alternatva excluída com sucesso!'
+
+    def form_valid(self, request, *args, **kwargs):
+        messages.success(self.request, self.success_message)
+        return super(ChoiceDeleteView, self).form_valid(request, *args, **kwargs)
+
+    def get_success_url(self, *args, **kwargs): 
+        question_id = self.object.question.id
+        return reverse_lazy('poll_edit', kwargs={'pk': question_id})
+    
