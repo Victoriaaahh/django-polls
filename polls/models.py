@@ -11,8 +11,7 @@ class Question(models.Model):
     pub_date = models.DateTimeField("date published", default=timezone.now)
     author = models.ForeignKey(
         User, 
-        editable = False
-        editable = False
+        editable = False,
         on_delete = models.DO_NOTHING,
         null= True
     )

@@ -1,3 +1,4 @@
+from unicodedata import name
 from django.urls import path
 from . import views
 urlpatterns = [
@@ -21,7 +22,8 @@ urlpatterns = [
     path('<int:pk>/atualizar', views.QuestionUpdateView.as_view(), name='question-update'),
     path('pergunta/<int:pk>/alternativa/add', views.ChoiceCreateView.as_view(), name="choice_add"),
     # path('alternativa/<int:pk>/edit',views.ChoiceUpdateView.as_view(), name="choice_edit"),
-    path('alternativa/<int:pk>/delete', views.ChoiceDeleteView.as_view(), name="choice_delete")
-    
+    path('alternativa/<int:pk>/delete', views.ChoiceDeleteView.as_view(), name="choice_delete"),
+    path('pergunta/<int:question_id>/vote', views.vote, name="poll_vote"),
+
 ]
 
