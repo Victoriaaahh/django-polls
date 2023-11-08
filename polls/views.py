@@ -111,7 +111,7 @@ class ChoiceCreateView(CreateView):
 
     def get_success_url(self, *args, **kwargs):
         question_id = self.kwargs.get('pk')
-        return reverse_lazy('poll_edit', kwargs={'pk': question_id}) 
+        return reverse_lazy('question-update', kwargs={'pk': question_id}) 
      
 class ChoiceDeleteView(LoginRequiredMixin, DeleteView):
     model: Choice
@@ -126,7 +126,7 @@ class ChoiceDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self, *args, **kwargs): 
         question_id = self.object.question.id
-        return reverse_lazy('poll_edit', kwargs={'pk': question_id})
+        return reverse_lazy('question-update', kwargs={'pk': question_id})
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
@@ -140,5 +140,29 @@ def vote(request, question_id):
             selected_choice.save()
             messages.success(request, 'Seu voto foi registrado com sucesso!')
             return redirect(reverse_lazy("poll_show", args=(question.id,)))
-context = {'question': question}
-return render(request, 'polls/question_detail.html', context)  
+    context = {'question': question}
+    return render(request, 'polls/question_detail.html', context)  
+
+class ChoiceUpdateView(UpdateView):
+    model = Choice 
+    template_name = 'polls/question_form.html'
+    fields = ('choice_text', )
+    success_url = reverse_lazy('question-list')
+    success_message = 'Alternativa atualizada com sucesso'
+
+    def get_context_data(self, **kwargs):
+        context = super(ChoiceUpdateView, self).get_context_data(**kwargs)
+        context['form_tittle'] = 'Editando a pergunta'
+        question_id = self.kwargs.get('pk')
+        choices = Choice.objects.filter(question__pk=question_id)
+        context['question_choices'] = choices
+
+        return context
+
+    def form_valid(self, request, *args, **kwargs):
+        messages.success(self.request, self.success_message)
+        return super(ChoiceUpdateView, self).form_valid(request, *args, **kwargs)
+
+    def get_success_url(self, *args, **kwargs):
+        question_id = self.object.question.id
+        return reverse_lazy('question-update', kwargs={'pk': question_id})
