@@ -66,67 +66,66 @@ class QuestionDeleteView(DeleteView):
         return super().form_valid(form)
 
 class QuestionUpdateView(UpdateView):
-    model = Question 
-    template_name = 'polls/question_form.html'
-    fields = ('question_text', 'pub_date', )
+    model = Question
+    templates_name = 'polls/question_form.html'
     success_url = reverse_lazy('question-list')
-    success_message = 'Pergunta atualizada com sucesso'
+    success_message = 'Pergunta atualizada'
+    fields = ('question_text', 'pub_date')
 
     def get_context_data(self, **kwargs):
         context = super(QuestionUpdateView, self).get_context_data(**kwargs)
-        context['form_tittle'] = 'Editando a pergunta'
+        context['form_title'] = 'Editando a pergunta'
+
 
         question_id = self.kwargs.get('pk')
-        choices = Choice.objects.filter(question__pk=question_id)
+        choices = Choice.objects.filter(question_id=question_id)
         context['question_choices'] = choices
 
         return context
-
+    
     def form_valid(self, request, *args, **kwargs):
         messages.success(self.request, self.success_message)
         return super(QuestionUpdateView, self).form_valid(request, *args, **kwargs)
 
 class ChoiceCreateView(CreateView):
     model = Choice
-    template_name = "polls/choice_form.html"
+    template_name = 'polls/choice_form.html'
     fields = ('choice_text', )
-    success_message = 'Opção de voto registrado com sucesso'
+    success_message = 'Alternativa registrada com sucesso!'
 
-    def dispatch(self, request, *args, **kwards):
+    def dispatch(self, request, *args, **kwargs):
         self.question = get_object_or_404(Question, pk=self.kwargs.get('pk'))
-        return super(ChoiceCreateView, self).dispatch(request, *args, **kwards)
-    
-    def get_context_data(self, **kwards): 
+        return super(ChoiceCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
         question = get_object_or_404(Question, pk=self.kwargs.get('pk'))
 
-        context = super(ChoiceCreateView, self).get_context_data(**kwards)
-        context['form_tittle'] = f'Alternativa para: {question.question_text}'
-
+        context = super(ChoiceCreateView, self).get_context_data(**kwargs)
+        context ['form_title'] = f'Alternativa para: {question.question_text}'
+    
         return context
 
     def form_valid(self, form):
         form.instance.question = self.question
-        messages.success = (self.request, self.success_message)
+        messages.success(self.request, self.success_message)
         return super(ChoiceCreateView, self).form_valid(form)
 
     def get_success_url(self, *args, **kwargs):
         question_id = self.kwargs.get('pk')
-        return reverse_lazy('question-update', kwargs={'pk': question_id}) 
+        return reverse_lazy('question-update', kwargs = {'pk': question_id})
      
 class ChoiceDeleteView(LoginRequiredMixin, DeleteView):
-    model: Choice
-    template_name: 'polls/choice_confirm_delete.html'
-    fields = ('choice_text', )
-    success_message = 'Alternatva excluída com sucesso!'
+    model = Choice
+    template_name = 'polls/choice_confirm_delete_form.html'
+    success_message = 'Alternativa excluída com sucesso!'
 
-    def form_valid(self, request, form, *args, **kwargs):
-        form.instance.author = self.request.user
+    def form_valid(self, request, *args, **kwargs):
         messages.success(self.request, self.success_message)
         return super(ChoiceDeleteView, self).form_valid(request, *args, **kwargs)
 
-    def get_success_url(self, *args, **kwargs): 
+    def get_success_url(self, *args, **kwargs):
         question_id = self.object.question.id
-        return reverse_lazy('question-update', kwargs={'pk': question_id})
+        return reverse_lazy('question-update', kwargs = {'pk': question_id})
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
@@ -151,7 +150,7 @@ def results(request, question_id):
     context = {"question": question}
 
     context['votes'] = []
-    for choice in question.chiice_set.all():
+    for choice in question.choice_set.all():
         percentage = 0
         if choice.votes > 0 and total_votes > 0:
             percentage= choice.votes / total_votes * 100
